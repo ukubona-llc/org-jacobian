@@ -1,0 +1,294 @@
+
+<h2 class="sr-only">Ukubona organizational Jacobian — live scalar with drilldown matrix showing organizational health across HR, Operations, Finance, Executive, and Compliance lenses.</h2>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+.wrap{padding:1.5rem 1rem 2rem;max-width:680px}
+.hdr{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:8px}
+.sup{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#888}
+.ctrl{display:flex;align-items:center;gap:8px}
+.slabel{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#888;margin-bottom:.25rem}
+.sblock{display:flex;align-items:baseline;gap:16px;margin-bottom:.25rem}
+.sval{font-size:64px;font-weight:500;line-height:1;transition:color 1s}
+.sverdict{font-size:13px;font-weight:500;margin-top:4px;letter-spacing:.03em;transition:color 1s}
+.ssub{font-size:12px;color:#888;margin-top:4px}
+.sbar-wrap{height:6px;background:#e8e8e8;border-radius:3px;margin:12px 0 1.5rem;overflow:hidden}
+.sbar{height:100%;border-radius:3px;transition:width 1s,background 1s}
+.lens-bar{display:flex;gap:6px;margin-bottom:1.5rem;flex-wrap:wrap;align-items:center}
+.lens-lbl{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#888;margin-right:4px}
+.lbtn{font-size:11px;padding:4px 10px;border:1px solid #ccc;border-radius:6px;background:transparent;color:#888;cursor:pointer;transition:all .15s;letter-spacing:.03em}
+.lbtn.active{background:#f0f0f0;color:#222;border-color:#aaa}
+.sec{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#888;margin-bottom:.75rem}
+.mcards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:1.5rem}
+.mcard{background:#f7f7f5;border-radius:8px;padding:.75rem 1rem;border:1px solid #e8e8e5}
+.mcard-lbl{font-size:11px;color:#888;margin-bottom:4px}
+.mcard-val{font-size:20px;font-weight:500;color:#111}
+.mx-wrap{overflow-x:auto;margin-bottom:1.5rem}
+.mx{border-collapse:collapse;width:100%;min-width:420px}
+.mx th{font-size:11px;color:#888;font-weight:400;text-align:center;padding:6px 4px;letter-spacing:.06em}
+.mx th.rh{text-align:right;padding-right:10px}
+.mx td.rl{font-size:11px;color:#888;text-align:right;padding-right:10px;white-space:nowrap}
+.cell{width:76px;height:54px;border:1px solid #e0e0e0;text-align:center;cursor:pointer;transition:background .6s,border-color .2s;position:relative;vertical-align:middle}
+.cell:hover{border-color:#555;z-index:2}
+.cell-v{font-size:15px;font-weight:500;display:block;line-height:1;color:inherit}
+.cell-s{font-size:10px;color:#999;display:block;margin-top:3px}
+.cell.sel{border:2px solid #3a7bd5!important;z-index:3}
+.diag{opacity:.3;cursor:default}
+.detail{background:#f7f7f5;border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.5rem;min-height:200px;border:1px solid #e8e8e5}
+.dh{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:.75rem;flex-wrap:wrap;gap:8px}
+.dt{font-size:14px;font-weight:500;color:#111}
+.dv{font-size:22px;font-weight:500;color:#111}
+.cwrap{position:relative;width:100%;height:160px}
+.pbtn{font-size:12px;padding:5px 12px;border:1px solid #ccc;border-radius:6px;background:transparent;color:#333;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .15s}
+.pbtn:hover{background:#f0f0f0}
+.tick{font-size:11px;color:#888}
+.up{color:#1d9e74}.dn{color:#e24b4a}
+</style>
+<div class="wrap">
+  <div class="hdr">
+    <div><div class="sup">Ukubona · Organizational twin · Jacobian</div></div>
+    <div class="ctrl">
+      <button class="pbtn" id="playBtn"><i class="ti ti-player-play" aria-hidden="true"></i><span id="playLbl">Simulate drift</span></button>
+      <span class="tick" id="tickLbl">t = 0</span>
+    </div>
+  </div>
+  <div class="slabel">Health scalar · S(t)</div>
+  <div class="sblock">
+    <div class="sval" id="sVal">0.74</div>
+    <div>
+      <div class="sverdict" id="sVerdict">System healthy — decision gate open</div>
+      <div class="ssub" id="sSub">S &gt; 0.50 · no intervention required</div>
+    </div>
+  </div>
+  <div class="sbar-wrap"><div class="sbar" id="sBar" style="width:74%;background:#1d9e74"></div></div>
+
+  <div class="lens-bar">
+    <div class="lens-lbl">Lens:</div>
+    <button class="lbtn active" data-role="all">All</button>
+    <button class="lbtn" data-role="hr">HR</button>
+    <button class="lbtn" data-role="ops">Ops</button>
+    <button class="lbtn" data-role="fin">Finance</button>
+    <button class="lbtn" data-role="exec">Executive</button>
+    <button class="lbtn" data-role="comp">Compliance</button>
+  </div>
+
+  <div class="mcards" id="mcards"></div>
+
+  <div class="sec">Jacobian J(t) — click any cell to drill into the feedback loop</div>
+  <div class="mx-wrap">
+    <table class="mx" id="mx" aria-label="4x4 Jacobian sensitivity matrix between organizational layers"></table>
+  </div>
+  <div class="detail" id="detail" style="display:none"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const LAYERS = ['World (P)','Perception (A)','Generative (G)','Embodied (E)'];
+const SHORT = ['J_P','J_A','J_G','J_E'];
+const DESC = {
+  J_P:'Infrastructure & capital',
+  J_A:'Activation gate · decisions under uncertainty',
+  J_G:'Generative output · error trace',
+  J_E:'Embodied feedback · KPI → weight update'
+};
+
+const ROLE_W = {
+  all: [1,1,1,1],
+  hr:  [0.8,1.4,0.6,1.2],
+  ops: [1.3,1.0,1.2,0.9],
+  fin: [1.5,0.8,0.7,1.8],
+  exec:[0.6,1.2,1.0,1.4],
+  comp:[0.9,1.5,0.8,1.0]
+};
+
+const ROLE_METRICS = {
+  all: [
+    {lbl:'Throughput index',   fn:(m)=>((m[0][1]*m[1][2])*10).toFixed(2), unit:''},
+    {lbl:'Feedback gain',      fn:(m)=>((m[3][0]*m[3][1])*10).toFixed(2), unit:''},
+    {lbl:'Gate λ',             fn:(m)=>(1-m[1][2]*0.5).toFixed(2),         unit:''},
+    {lbl:'‖ε_FGT‖',            fn:(m)=>(1-m[2][3]).toFixed(2),             unit:''}
+  ],
+  hr: [
+    {lbl:'Headcount coupling', fn:(m)=>(m[3][0]).toFixed(2), unit:''},
+    {lbl:'Talent activation',  fn:(m)=>(m[1][2]).toFixed(2), unit:''},
+    {lbl:'Retention signal',   fn:(m)=>((1-m[0][3])*100).toFixed(0), unit:'%'},
+    {lbl:'Culture lag',        fn:(m)=>(m[3][1]).toFixed(2), unit:''}
+  ],
+  ops: [
+    {lbl:'Process throughput', fn:(m)=>((m[0][1]*m[1][2])*10).toFixed(2), unit:''},
+    {lbl:'Delivery coupling',  fn:(m)=>(m[2][3]).toFixed(2), unit:''},
+    {lbl:'Bottleneck index',   fn:(m)=>(1-m[1][2]).toFixed(2), unit:''},
+    {lbl:'Feedback latency',   fn:(m)=>(m[3][0]).toFixed(2), unit:''}
+  ],
+  fin: [
+    {lbl:'Capital efficiency', fn:(m)=>((m[0][1])*100).toFixed(0), unit:'%'},
+    {lbl:'Budget exposure',    fn:(m)=>((1-m[2][3])*100).toFixed(0), unit:'%'},
+    {lbl:'KPI coupling',       fn:(m)=>(m[3][2]).toFixed(2), unit:''},
+    {lbl:'Return signal',      fn:(m)=>((m[0][2]+m[0][3])/2).toFixed(2), unit:''}
+  ],
+  exec: [
+    {lbl:'Strategic alignment',fn:(m)=>((m[0][1]+m[1][2])/2).toFixed(2), unit:''},
+    {lbl:'Decision gate',      fn:(m)=>(1-m[1][2]*0.5).toFixed(2), unit:''},
+    {lbl:'Org coherence',      fn:(m)=>(getScalar(m)).toFixed(2), unit:''},
+    {lbl:'Eigenmode status',   fn:(m)=>getScalar(m)>=0.65?'Stable':'Watch', unit:'', text:true}
+  ],
+  comp: [
+    {lbl:'Gate compliance',    fn:(m)=>(m[1][0]).toFixed(2), unit:''},
+    {lbl:'Audit trail index',  fn:(m)=>(m[3][2]).toFixed(2), unit:''},
+    {lbl:'Risk exposure',      fn:(m)=>((1-m[2][3])*100).toFixed(0), unit:'%'},
+    {lbl:'Control coupling',   fn:(m)=>(m[0][3]).toFixed(2), unit:''}
+  ]
+};
+
+let tick=0, playing=false, playTimer=null, sel=null, role='all', dChart=null;
+
+function noise(b,a,t,f){return b+a*Math.sin(f*t+b*10)+a*0.3*Math.cos(f*1.7*t+2);}
+
+function getMatrix(t,r){
+  const w=ROLE_W[r];
+  const raw=[
+    [0,noise(.60,.11,t,.4)*w[0],noise(.44,.17,t,.7)*w[0],noise(.37,.13,t,.5)*w[0]],
+    [noise(.53,.14,t,.6)*w[1],0,noise(.70,.10,t,.3)*w[1],noise(.48,.16,t,.8)*w[1]],
+    [noise(.41,.13,t,.9)*w[2],noise(.67,.11,t,.4)*w[2],0,noise(.80,.09,t,.2)*w[2]],
+    [noise(.57,.15,t,.5)*w[3],noise(.43,.17,t,.7)*w[3],noise(.75,.10,t,.6)*w[3],0]
+  ];
+  return raw.map(r2=>r2.map(v=>Math.max(0,Math.min(1,v))));
+}
+
+function getScalar(m){
+  let s=0,n=0;
+  for(let i=0;i<4;i++) for(let j=0;j<4;j++) if(i!==j){s+=m[i][j];n++;}
+  return Math.min(.99,Math.max(.1,(s/n)*1.1+.05));
+}
+
+function cellColor(v){
+  if(v>=.7) return {bg:'#e1f5ee',txt:'#085041'};
+  if(v>=.5) return {bg:'#faeeda',txt:'#633806'};
+  if(v>=.3) return {bg:'#fbeaf0',txt:'#4b1528'};
+  return {bg:'#fcebeb',txt:'#501313'};
+}
+
+function sColor(s){return s>=.65?'#1d9e74':s>=.5?'#c8921a':'#e24b4a';}
+
+function getHist(r,c,t){
+  const pts=[];
+  for(let i=Math.max(0,t-19);i<=t;i++){pts.push({x:i,y:parseFloat(getMatrix(i,role)[r][c].toFixed(3))});}
+  return pts;
+}
+
+function renderMetrics(m){
+  const defs=ROLE_METRICS[role];
+  document.getElementById('mcards').innerHTML=defs.map(d=>{
+    const v=d.fn(m);
+    const disp=d.text?v:v+d.unit;
+    return `<div class="mcard"><div class="mcard-lbl">${d.lbl}</div><div class="mcard-val">${disp}</div></div>`;
+  }).join('');
+}
+
+function renderMatrix(m){
+  const tbl=document.getElementById('mx');
+  let h='<thead><tr><th class="rh"></th>';
+  SHORT.forEach(s=>{h+=`<th>${s}</th>`;});
+  h+='</tr></thead><tbody>';
+  for(let i=0;i<4;i++){
+    h+=`<tr><td class="rl">${SHORT[i]}</td>`;
+    for(let j=0;j<4;j++){
+      const diag=i===j;
+      const v=m[i][j];
+      const c=diag?{bg:'transparent',txt:'#bbb'}:cellColor(v);
+      const isSel=sel&&sel[0]===i&&sel[1]===j;
+      h+=`<td class="cell${diag?' diag':''}${isSel?' sel':''}"
+        data-r="${i}" data-c="${j}"
+        style="background:${c.bg};color:${c.txt}">
+        <span class="cell-v">${diag?'—':v.toFixed(2)}</span>
+        ${!diag?`<span class="cell-s">∂${SHORT[j]}/∂${SHORT[i]}</span>`:''}
+      </td>`;
+    }
+    h+='</tr>';
+  }
+  h+='</tbody>';
+  tbl.innerHTML=h;
+  tbl.querySelectorAll('.cell:not(.diag)').forEach(cell=>{
+    cell.addEventListener('click',()=>{
+      const r=+cell.dataset.r,c=+cell.dataset.c;
+      sel=[r,c];
+      renderMatrix(m);
+      showDetail(r,c,m);
+    });
+  });
+}
+
+function showDetail(r,c,m){
+  const panel=document.getElementById('detail');
+  panel.style.display='block';
+  const hist=getHist(r,c,tick);
+  const cur=hist[hist.length-1].y;
+  const prev=hist.length>1?hist[hist.length-2].y:cur;
+  const d=cur-prev;
+  const dStr=d===0?'':`<span class="${d>0?'up':'dn'}">${d>0?'↑':'↓'}${Math.abs(d).toFixed(3)}</span>`;
+  panel.innerHTML=`
+    <div class="dh">
+      <div>
+        <div class="dt">∂${SHORT[c]} / ∂${SHORT[r]} — how ${SHORT[r]} moves ${SHORT[c]}</div>
+        <div style="font-size:12px;color:#888;margin-top:3px">${DESC[SHORT[r]]} → ${DESC[SHORT[c]]}</div>
+      </div>
+      <div style="display:flex;align-items:baseline;gap:6px"><div class="dv" id="dCur">${cur.toFixed(3)}</div>${dStr}</div>
+    </div>
+    <div class="cwrap"><canvas id="dCanvas" role="img" aria-label="Time series of Jacobian sensitivity for this cell">Sensitivity over time.</canvas></div>
+    <div style="font-size:11px;color:#aaa;margin-top:8px">High → strong coupling · Low → decoupled layers · Diagonal suppressed</div>
+  `;
+  if(dChart){dChart.destroy();dChart=null;}
+  const col=sColor(cur);
+  dChart=new Chart(document.getElementById('dCanvas'),{
+    type:'line',
+    data:{labels:hist.map(p=>p.x),datasets:[{
+      label:`∂${SHORT[c]}/∂${SHORT[r]}`,
+      data:hist.map(p=>p.y),
+      borderColor:col,backgroundColor:col+'22',fill:true,tension:0.4,
+      pointRadius:3,pointBackgroundColor:col,borderWidth:2
+    }]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{x:{ticks:{font:{size:10},color:'#999'},grid:{color:'rgba(0,0,0,0.06)'}},
+              y:{min:0,max:1,ticks:{font:{size:10},color:'#999'},grid:{color:'rgba(0,0,0,0.06)'}}}
+    }
+  });
+}
+
+function render(){
+  const m=getMatrix(tick,role);
+  const s=getScalar(m);
+  const col=sColor(s);
+  document.getElementById('sVal').textContent=s.toFixed(2);
+  document.getElementById('sVal').style.color=col;
+  document.getElementById('sVerdict').textContent=s>=.65?'System healthy — decision gate open':s>=.5?'Variable — monitor activation gate':'S < 0.50 — intervention required';
+  document.getElementById('sVerdict').style.color=col;
+  document.getElementById('sSub').textContent=s>=.5?'S > 0.50 · no intervention required':'S < 0.50 · escalate to executive';
+  document.getElementById('sBar').style.width=(s*100).toFixed(1)+'%';
+  document.getElementById('sBar').style.background=col;
+  document.getElementById('tickLbl').textContent='t = '+tick;
+  renderMatrix(m);
+  renderMetrics(m);
+  if(sel) showDetail(sel[0],sel[1],m);
+}
+
+document.getElementById('playBtn').addEventListener('click',()=>{
+  playing=!playing;
+  const btn=document.getElementById('playBtn');
+  btn.querySelector('i').className=playing?'ti ti-player-pause':'ti ti-player-play';
+  document.getElementById('playLbl').textContent=playing?'Pause':'Simulate drift';
+  if(playing){playTimer=setInterval(()=>{tick++;render();},3000);}
+  else{clearInterval(playTimer);}
+});
+
+document.querySelectorAll('.lbtn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.lbtn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    role=btn.dataset.role;
+    render();
+  });
+});
+
+render();
+</script>

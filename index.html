@@ -335,7 +335,7 @@ function renderMatrix(m){
 }
 
 function showDetail(r,c,m){
-  const panel=document.getElementById('detail');
+  const panel=document.getElementById('detail');    
   panel.style.display='block';
   const h=hist(r,c,tick);
   const cur=h[h.length-1].y;
